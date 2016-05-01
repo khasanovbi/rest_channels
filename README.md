@@ -1,3 +1,6 @@
+[![PyPI version](https://badge.fury.io/py/rest_channels.svg)](https://badge.fury.io/py/rest_channels) [![Build Status](https://travis-ci.org/KhasanovBI/rest_channels.svg?branch=master)](https://travis-ci.org/KhasanovBI/rest_channels)
+
+[![Documentation Status](http://readthedocs.org/projects/rest-channels/badge/?version=latest)](http://rest-channels.readthedocs.io/en/latest/?badge=latest) [![PyPI](https://img.shields.io/pypi/l/rest_channels.svg)](https://pypi.python.org/pypi/rest_channels)
 # REST channels
 
 `django-channels` with `django-rest-framework` under the same roof.
