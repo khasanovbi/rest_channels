@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import unicode_literals
+
 import six
 from django.db import models
 from functools import update_wrapper
@@ -8,12 +9,12 @@ from rest_framework.compat import set_rollback
 
 from rest_channels import exceptions as rest_exceptions
 from rest_channels.settings import rest_channels_settings
-from rest_channels.socket_request import SocketRequest, ContentType
+from rest_channels.socket_request import ContentType, SocketRequest
 
 
 def exception_handler(exc, context):
     if isinstance(exc, exceptions.APIException):
-        headers = {}
+        # headers = {}
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:

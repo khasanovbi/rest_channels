@@ -35,7 +35,11 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP',
-    ], 
-    requires=['six', 'ujson', 'django'],
+    ],
+    install_requires=[
+        'six',
+        'ujson',
+        'django'
+    ],
     url='https://github.com/KhasanovBI/rest_channels'
 )

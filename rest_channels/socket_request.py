@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 
-import sys
-
 import six
-from django.utils.datastructures import MultiValueDict
+import sys
 
 
 class Empty(object):
