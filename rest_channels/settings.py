@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
-
 from rest_framework.compat import importlib
 
 DEFAULTS = {
