@@ -11,9 +11,9 @@ branches:
   only:
     - master
 install:
-  - pip install DJANGO tox-travis
+  - python setup.py install
+  - pip install DJANGO python-coveralls
 script:
-  - tox
   - coverage run --source=rest_channels runtests.py
   - coverage report
 after_success:
