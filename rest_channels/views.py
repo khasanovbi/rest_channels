@@ -1,15 +1,14 @@
-from functools import update_wrapper
-
+# coding=utf-8
+from __future__ import unicode_literals
 import six
-import ujson
 from django.db import models
+from functools import update_wrapper
 from rest_framework import exceptions
-from rest_channels import exceptions as rest_exceptions
 from rest_framework.compat import set_rollback
 
+from rest_channels import exceptions as rest_exceptions
 from rest_channels.settings import rest_channels_settings
 from rest_channels.socket_request import SocketRequest, ContentType
-from rest_channels.socket_response import SocketResponse
 
 
 def exception_handler(exc, context):
@@ -191,5 +190,5 @@ class SocketView(object):
         except Exception as exc:
             self.handle_exception(exc)
 
-    def send(self, channel_or_group, data):
-        channel_or_group.send({'text': self.get_rendered_data(data)})
+    def send(self, channel_or_group, data, content_type='text', close=False):
+        channel_or_group.send({content_type: self.get_rendered_data(data), 'close': close})

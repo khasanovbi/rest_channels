@@ -21,6 +21,7 @@ def _hasattr(obj, name):
 class ContentType(object):
     text = 'text'
     bytes = 'bytes'
+    none = 'none'
 
 
 class SocketRequest(object):
@@ -34,8 +35,12 @@ class SocketRequest(object):
 
     @property
     def content_type(self):
-        text = self._message.content.get(ContentType.text)
-        return ContentType.text if text is not None else ContentType.bytes
+        if self._message.content.get(ContentType.text) is not None:
+            return ContentType.text
+        elif self._message.content.get(ContentType.bytes) is not None:
+            return ContentType.bytes
+        else:
+            return ContentType.none
 
     @property
     def data(self):
@@ -69,8 +74,10 @@ class SocketRequest(object):
                 parsed = parser().parse(self._message.content.get(media_type))
                 if media_type == ContentType.text:
                     return parsed, None
-                else:
+                elif media_type == ContentType.bytes:
                     return None, parsed
+                else:
+                    return None, None
             except:
                 self._text = None
                 self._bytes = None
