@@ -1,6 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/rest_channels.svg)](https://badge.fury.io/py/rest_channels) [![Build Status](https://travis-ci.org/KhasanovBI/rest_channels.svg?branch=master)](https://travis-ci.org/KhasanovBI/rest_channels)
-
-[![Coverage Status](https://coveralls.io/repos/github/KhasanovBI/rest_channels/badge.svg?branch=master)](https://coveralls.io/github/KhasanovBI/rest_channels?branch=master)
+[![PyPI version](https://badge.fury.io/py/rest_channels.svg)](https://badge.fury.io/py/rest_channels) [![Build Status](https://travis-ci.org/KhasanovBI/rest_channels.svg?branch=master)](https://travis-ci.org/KhasanovBI/rest_channels) [![Coverage Status](https://coveralls.io/repos/github/KhasanovBI/rest_channels/badge.svg?branch=master)](https://coveralls.io/github/KhasanovBI/rest_channels?branch=master)
 
 [![Documentation Status](http://readthedocs.org/projects/rest-channels/badge/?version=latest)](http://rest-channels.readthedocs.io/en/latest/?badge=latest) [![PyPI](https://img.shields.io/pypi/l/rest_channels.svg)](https://pypi.python.org/pypi/rest_channels)
 
