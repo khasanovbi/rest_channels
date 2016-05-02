@@ -1,8 +1,10 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+User = get_user_model()
 
 
 # noinspection PyProtectedMember,PyAbstractClass
@@ -18,3 +20,8 @@ class RouteSerializer(serializers.Serializer):
                 'Method {method_name} not supplied'.format(method_name=method_name)
             )
         return method_name
+
+
+# noinspection PyAbstractClass
+class RouteResponseSerializer(RouteSerializer):
+    status = serializers.IntegerField(min_value=100, max_value=600)
