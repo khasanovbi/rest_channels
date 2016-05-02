@@ -3,6 +3,19 @@ import os
 import re
 from setuptools import find_packages, setup
 
+try:
+    from pypandoc import convert
+
+
+    def read_md(f):
+        return convert(f, 'rst')
+except ImportError:
+    print("Warning: pypandoc module not found, could not convert Markdown to RST")
+
+
+    def read_md(f):
+        return open(f, 'r').read()
+
 
 def get_version(package):
     """
@@ -22,8 +35,7 @@ setup(
     include_package_data=True,
     license='BSD License',
     description='Class Based Views for Django Channels with Django Rest Framework',
-    setup_requires=['setuptools-markdown'],
-    long_description_markdown_filename='README.md',
+    long_description=read_md('README.md'),
     author='Khasanov Bulat',
     author_email='afti@yandex.ru',
     classifiers=[
