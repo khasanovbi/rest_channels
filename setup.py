@@ -39,7 +39,9 @@ setup(
     install_requires=[
         'six',
         'ujson',
-        'django'
+        'django',
+        'channels',
+        'djangorestframework'
     ],
     url='https://github.com/KhasanovBI/rest_channels'
 )
