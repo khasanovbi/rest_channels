@@ -23,7 +23,7 @@ setup(
     license='BSD License',
     description='Class Based Views for Django Channels with Django Rest Framework',
     setup_requires=['setuptools-markdown'],
-    long_description='README.md',
+    long_description_markdown_filename='README.md',
     author='Khasanov Bulat',
     author_email='afti@yandex.ru',
     classifiers=[

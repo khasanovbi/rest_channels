@@ -16,5 +16,8 @@ install:
 script:
   - coverage run --source=rest_channels runtests.py
   - coverage report
+addons:
+  apt_packages:
+    - pandoc
 after_success:
   - coveralls
