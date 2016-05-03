@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from channels.sessions import channel_session
-from rest_framework import status
+from rest_framework import status as rest_framework_status
 
 from rest_channels.decorators import rest_channels
 from rest_channels.socket_routing.serializers import RouteSerializer, RouteResponseSerializer
@@ -18,11 +18,14 @@ class SocketRouteView(SocketView):
         self.action = method
         getattr(self, method)(request, serializer.data.get('data'), *args, **kwargs)
 
-    def route_send(self, channel_or_group, data, status=status.HTTP_200_OK, content_type='text',
-                   close=False):
+    def route_send(self, channel_or_group, data, method=None,
+                   status=rest_framework_status.HTTP_200_OK, content_type='text', close=False):
+        if method is None:
+            assert self.action is not None
+            method = self.action
         self.send(
             channel_or_group,
-            RouteResponseSerializer({'data': data, 'status': status, 'method': self.action}).data,
+            RouteResponseSerializer({'data': data, 'status': status, 'method': method}).data,
             content_type,
             close
         )
