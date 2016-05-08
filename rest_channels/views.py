@@ -14,11 +14,11 @@ from rest_channels.socket_request import ContentType, SocketRequest
 
 def exception_handler(exc, context):
     if isinstance(exc, exceptions.APIException):
-        # headers = {}
-        if isinstance(exc.detail, (list, dict)):
+        if isinstance(exc.detail, dict):
             data = exc.detail
         else:
             data = {'detail': exc.detail}
+        data.update({'status': exc.status_code})
         set_rollback()
         return data
     # Note: Unhandled exceptions will raise a 500 error.
@@ -64,7 +64,6 @@ class SocketView(object):
             cls.queryset._fetch_all = force_evaluation
             cls.queryset._result_iter = force_evaluation  # Django <= 1.5
 
-        # ######################
         for key in initkwargs:
             if key in cls.socket_channel_names:
                 raise TypeError("You tried to pass in the %s method name as a "
@@ -85,13 +84,8 @@ class SocketView(object):
         view.view_class = cls
         view.view_initkwargs = initkwargs
 
-        # take name and docstring from class
         update_wrapper(view, cls, updated=())
-
-        # and possible attributes set by decorators
-        # like csrf_exempt from dispatch
         update_wrapper(view, cls.dispatch, assigned=())
-        ##########################
         view.cls = cls
         return view
 
@@ -109,19 +103,6 @@ class SocketView(object):
         determine what kind of exception to raise.
         """
         raise rest_exceptions.EventNotAllowed(request.channel.name)
-
-    def get_parser_context(self, http_request):
-        """
-        Returns a dict that is passed through to Parser.parse(),
-        as the `parser_context` keyword argument.
-        """
-        # Note: Additionally `request` and `encoding` will also be added
-        #       to the context by the RESTMessage object.
-        return {
-            'view': self,
-            'args': getattr(self, 'args', ()),
-            'kwargs': getattr(self, 'kwargs', {})
-        }
 
     def get_exception_handler_context(self):
         """
@@ -154,14 +135,13 @@ class SocketView(object):
         )
 
     def get_renderer(self):
-        if self.message.content_type == ContentType.text:
+        if self.request.content_type == ContentType.text:
             return self.text_renderer_class
         else:
             return self.bytes_renderer_class
 
     def get_rendered_data(self, data):
         renderer = self.get_renderer()
-        # TODO понять на каком моменте инициализация
         rendered_data = renderer().render(data=data)
         return rendered_data
 
@@ -174,13 +154,13 @@ class SocketView(object):
         if response is None:
             raise
 
-        self.send(self.message.reply_channel, response)
+        self.send(self.request.reply_channel, response)
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, message, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        request = self.initialize_request(request, *args, **kwargs)
-        self.message = request
+        request = self.initialize_request(message, *args, **kwargs)
+        self.request = request
         try:
             channel_name = request.channel.name
             if channel_name in self.socket_channel_names:

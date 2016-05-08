@@ -2,15 +2,15 @@
 from __future__ import unicode_literals
 
 from channels.sessions import channel_session
+from django.utils.decorators import method_decorator
 from rest_framework import status as rest_framework_status
 
-from rest_channels.decorators import rest_channels
 from rest_channels.socket_routing.serializers import RouteSerializer, RouteResponseSerializer
 from rest_channels.views import SocketView
 
 
 class SocketRouteView(SocketView):
-    @rest_channels(channel_session)
+    @method_decorator(channel_session)
     def receive(self, request, *args, **kwargs):
         serializer = RouteSerializer(data=request.data, context={'view': self})
         serializer.is_valid(raise_exception=True)

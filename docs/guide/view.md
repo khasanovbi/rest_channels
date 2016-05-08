@@ -16,7 +16,7 @@ For example:
         route(
             'websocket.receive',
             CompositionSocketView.as_view(),
-            path=r'/(?P<composition_id>\d+)/$'
+            path=r'ws/composition/(?P<composition_id>\d+)/$'
         ),
         ...
     ]
@@ -26,8 +26,8 @@ For example:
     class CompositionSocketView(SocketView):
         COMPOSITION_GROUP_TEMPLATE = 'Composition-%s'
         
-        # wrap django-channels decorators to `rest_channels` decorator 
-        @rest_channels(channel_session)
+        # wrap django-channels decorators to standard django decorator `method_decorator` 
+        @method_decorator(channel_session)
         def receive(self, request, *args, **kwargs):
             # Get composition id from path 
             composition_id = kwargs.get('composition_id')

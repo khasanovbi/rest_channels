@@ -4,14 +4,12 @@
 * [View][view]
 * [Parsers][parsers]
 * [Renderers][renderers]
-* [Decorators][decorators]
 * [Settings][settings]
 
 [request]: guide/request.md
 [view]: guide/view.md
 [parsers]: guide/parsers.md
 [renderers]: guide/renderers.md
-[decorators]: guide/decorators.md
 [settings]: guide/settings.md
 
 ## Socket Routing
