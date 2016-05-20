@@ -25,13 +25,7 @@ def exception_handler(exc, context):
     return None
 
 
-class SocketView(object):
-    socket_channel_names = ('websocket.connect', 'websocket.receive', 'websocket.disconnect')
-    socket_channels_map = {
-        'websocket.connect': 'connect',
-        'websocket.receive': 'receive',
-        'websocket.disconnect': 'disconnect'
-    }
+class ChannelsView(object):
     # The following policies may be set at either globally, or per-view.
     text_renderer_class = rest_channels_settings.DEFAULT_TEXT_RENDERER_CLASS
     bytes_renderer_class = rest_channels_settings.DEFAULT_BYTES_RENDERER_CLASS
@@ -154,8 +148,6 @@ class SocketView(object):
         if response is None:
             raise
 
-        self.send(self.request.reply_channel, response)
-
     def dispatch(self, message, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -163,13 +155,47 @@ class SocketView(object):
         self.request = request
         try:
             channel_name = request.channel.name
-            if channel_name in self.socket_channel_names:
-                handler = getattr(self, self.socket_channels_map[channel_name], self.not_allowed)
+            if channel_name in self.channel_names:
+                handler = getattr(self, self.channels_map[channel_name], self.not_allowed)
             else:
                 handler = self.not_allowed
             handler(request, *args, **kwargs)
         except Exception as exc:
             self.handle_exception(exc)
 
+
+class WebSocketView(ChannelsView):
+    channel_names = ('websocket.connect', 'websocket.receive', 'websocket.disconnect')
+    channels_map = {
+        'websocket.connect': 'connect',
+        'websocket.receive': 'receive',
+        'websocket.disconnect': 'disconnect'
+    }
+
     def send(self, channel_or_group, data, content_type='text', close=False):
         channel_or_group.send({content_type: self.get_rendered_data(data), 'close': close})
+
+    def handle_exception(self, exc):
+        exception_handler = self.settings.EXCEPTION_HANDLER
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            raise
+
+        self.send(self.request.reply_channel, response)
+
+
+class EmailView(ChannelsView):
+    channel_names = ('email.receive',)
+    channels_map = {
+        'email.receive': 'receive',
+    }
+
+
+class UDPView(ChannelsView):
+    channel_names = ('udp.receive',)
+    channels_map = {
+        'udp.receive': 'receive',
+    }

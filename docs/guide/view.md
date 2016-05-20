@@ -16,7 +16,7 @@ For example:
         route(
             'websocket.receive',
             CompositionSocketView.as_view(),
-            path=r'ws/composition/(?P<composition_id>\d+)/$'
+            path=r'/ws/composition/(?P<composition_id>\d+)/$'
         ),
         ...
     ]
