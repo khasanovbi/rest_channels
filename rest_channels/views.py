@@ -199,3 +199,10 @@ class UDPView(ChannelsView):
     channels_map = {
         'udp.receive': 'receive',
     }
+
+
+class HTTPView(ChannelsView):
+    channel_names = ('http.request',)
+    channels_map = {
+        'http.request': 'receive'
+    }
