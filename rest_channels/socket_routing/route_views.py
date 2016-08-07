@@ -3,10 +3,9 @@ from __future__ import unicode_literals
 
 from channels.sessions import channel_session
 from django.utils.decorators import method_decorator
-from rest_framework import status as rest_framework_status
-
 from rest_channels.socket_routing.serializers import RouteSerializer, RouteResponseSerializer
 from rest_channels.views import WebSocketView
+from rest_framework import status as rest_framework_status
 
 
 class SocketRouteView(WebSocketView):
@@ -29,3 +28,26 @@ class SocketRouteView(WebSocketView):
             content_type,
             close
         )
+
+    def handle_exception(self, exc):
+        exception_handler = self.settings.EXCEPTION_HANDLER
+
+        context = self.get_exception_handler_context()
+        response_data = exception_handler(exc, context)
+
+        if response_data is None:
+            self.route_send(
+                self.request.reply_channel,
+                data={'detail': 'Internal server error.'},
+                status=rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        else:
+            status_code = getattr(exc, 'status_code', None)
+            if status_code is None:
+                status_code=rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR,
+            self.route_send(
+                self.request.reply_channel,
+                data=response_data,
+                status=status_code
+            )
+

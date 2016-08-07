@@ -5,6 +5,7 @@ import six
 from django.db import models
 from functools import update_wrapper
 from rest_framework import exceptions
+from rest_framework import status
 from rest_framework.compat import set_rollback
 
 from rest_channels import exceptions as rest_exceptions
@@ -18,14 +19,13 @@ def exception_handler(exc, context):
             data = exc.detail
         else:
             data = {'detail': exc.detail}
-        data.update({'status': exc.status_code})
         set_rollback()
         return data
     # Note: Unhandled exceptions will raise a 500 error.
     return None
 
 
-class ChannelsView(object):
+class BaseChannelsView(object):
     # The following policies may be set at either globally, or per-view.
     text_renderer_class = rest_channels_settings.DEFAULT_TEXT_RENDERER_CLASS
     bytes_renderer_class = rest_channels_settings.DEFAULT_BYTES_RENDERER_CLASS
@@ -143,10 +143,21 @@ class ChannelsView(object):
         exception_handler = self.settings.EXCEPTION_HANDLER
 
         context = self.get_exception_handler_context()
-        response = exception_handler(exc, context)
+        response_data = exception_handler(exc, context)
 
-        if response is None:
-            raise
+        if response_data is None:
+            response_data = {
+                'detail': 'Internal server error.',
+                'status': status.HTTP_500_INTERNAL_SERVER_ERROR
+            }
+        else:
+            status_code = getattr(exc, 'status_code', None)
+            if status_code is not None:
+                response_data.update({'status': status_code})
+        self.send_exception(response_data)
+
+    def send_exception(self, response_data):
+        raise NotImplementedError
 
     def dispatch(self, message, *args, **kwargs):
         self.args = args
@@ -164,7 +175,7 @@ class ChannelsView(object):
             self.handle_exception(exc)
 
 
-class WebSocketView(ChannelsView):
+class WebSocketView(BaseChannelsView):
     channel_names = ('websocket.connect', 'websocket.receive', 'websocket.disconnect')
     channels_map = {
         'websocket.connect': 'connect',
@@ -175,33 +186,25 @@ class WebSocketView(ChannelsView):
     def send(self, channel_or_group, data, content_type='text', close=False):
         channel_or_group.send({content_type: self.get_rendered_data(data), 'close': close})
 
-    def handle_exception(self, exc):
-        exception_handler = self.settings.EXCEPTION_HANDLER
-
-        context = self.get_exception_handler_context()
-        response = exception_handler(exc, context)
-
-        if response is None:
-            raise
-
-        self.send(self.request.reply_channel, response)
+    def send_exception(self, response_data):
+        self.send(self.request.reply_channel, response_data)
 
 
-class EmailView(ChannelsView):
+class EmailView(BaseChannelsView):
     channel_names = ('email.receive',)
     channels_map = {
         'email.receive': 'receive',
     }
 
 
-class UDPView(ChannelsView):
+class UDPView(BaseChannelsView):
     channel_names = ('udp.receive',)
     channels_map = {
         'udp.receive': 'receive',
     }
 
 
-class HTTPView(ChannelsView):
+class HTTPView(BaseChannelsView):
     channel_names = ('http.request',)
     channels_map = {
         'http.request': 'receive'
