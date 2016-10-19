@@ -11,6 +11,7 @@ branches:
   only:
     - master
 install:
+  - pip install -U pip wheel setuptools
   - python setup.py install
   - pip install DJANGO python-coveralls
 script:
