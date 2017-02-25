@@ -1,16 +1,15 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+from functools import update_wrapper
+
 import six
 from django.db import models
-from functools import update_wrapper
-from rest_framework import exceptions
-from rest_framework import status
-from rest_framework.compat import set_rollback
-
 from rest_channels import exceptions as rest_exceptions
 from rest_channels.settings import rest_channels_settings
 from rest_channels.socket_request import ContentType, SocketRequest
+from rest_framework import exceptions, status
+from rest_framework.compat import set_rollback
 
 
 def exception_handler(exc, context):
