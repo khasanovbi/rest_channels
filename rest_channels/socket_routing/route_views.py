@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 from channels.sessions import channel_session
 from django.utils.decorators import method_decorator
+from rest_framework import status as rest_framework_status
+
 from rest_channels.socket_routing.serializers import RouteResponseSerializer, RouteSerializer
 from rest_channels.views import WebSocketView
-from rest_framework import status as rest_framework_status
 
 
 class SocketRouteView(WebSocketView):
