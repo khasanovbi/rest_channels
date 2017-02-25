@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
-import six
 import sys
+
+import six
 
 
 class Empty(object):
