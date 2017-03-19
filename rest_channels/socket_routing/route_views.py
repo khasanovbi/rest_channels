@@ -10,6 +10,8 @@ from rest_channels.views import WebSocketView
 
 
 class SocketRouteView(WebSocketView):
+    action = 'no_action'
+
     @method_decorator(channel_session)
     def receive(self, request, *args, **kwargs):
         serializer = RouteSerializer(data=request.data, context={'view': self})
@@ -21,7 +23,6 @@ class SocketRouteView(WebSocketView):
     def route_send(self, channel_or_group, data, status=rest_framework_status.HTTP_200_OK,
                    method=None, content_type='text', close=False):
         if method is None:
-            assert self.action is not None
             method = self.action
         self.send(
             channel_or_group,
@@ -37,17 +38,16 @@ class SocketRouteView(WebSocketView):
         response_data = exception_handler(exc, context)
 
         if response_data is None:
-            self.route_send(
-                self.request.reply_channel,
-                data={'detail': 'Internal server error.'},
-                status=rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            status_code = rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
         else:
-            status_code = getattr(exc, 'status_code', None)
-            if status_code is None:
-                status_code=rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR,
-            self.route_send(
-                self.request.reply_channel,
-                data=response_data,
-                status=status_code
+            status_code = getattr(
+                exc,
+                'status_code',
+                rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+        self.route_send(
+            self.request.reply_channel,
+            data=response_data if response_data else {'detail': 'Internal server error.'},
+            status=status_code
+        )

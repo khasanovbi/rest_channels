@@ -25,6 +25,12 @@ class ContentType(object):
 
 class SocketRequest(object):
     def __init__(self, message, text_parser_class=None, bytes_parser_class=None):
+        # TODO think more how to solve this hack more correct way
+        self.__class__ = type(
+            message.__class__.__name__,
+            (self.__class__, message.__class__),
+            {}
+        )
         self._message = message
         self.text_parser_class = text_parser_class
         self.bytes_parser_class = bytes_parser_class
