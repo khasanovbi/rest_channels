@@ -83,7 +83,7 @@ class SocketRequest(object):
                     return None, parsed
                 else:
                     return None, None
-            except:
+            except Exception:
                 self._text = None
                 self._bytes = None
                 raise
