@@ -1,12 +1,16 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+import logging
+
 from channels.sessions import channel_session
 from django.utils.decorators import method_decorator
 from rest_framework import status as rest_framework_status
 
 from rest_channels.socket_routing.serializers import RouteResponseSerializer, RouteSerializer
 from rest_channels.views import WebSocketView
+
+logger = logging.getLogger(__name__)
 
 
 class SocketRouteView(WebSocketView):
@@ -39,13 +43,13 @@ class SocketRouteView(WebSocketView):
 
         if response_data is None:
             status_code = rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
+            logger.error(exc)
         else:
             status_code = getattr(
                 exc,
                 'status_code',
                 rest_framework_status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
         self.route_send(
             self.request.reply_channel,
             data=response_data if response_data else {'detail': 'Internal server error.'},
