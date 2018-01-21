@@ -4,13 +4,18 @@ from __future__ import unicode_literals
 from functools import update_wrapper
 
 import six
-from django.db import models
+from django.db import connection, models, transaction
 from rest_framework import exceptions, status
-from rest_framework.compat import set_rollback
 
 from rest_channels import exceptions as rest_exceptions
 from rest_channels.settings import rest_channels_settings
 from rest_channels.socket_request import ContentType, SocketRequest
+
+
+def set_rollback():
+    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
+    if atomic_requests and connection.in_atomic_block:
+        transaction.set_rollback(True)
 
 
 def exception_handler(exc, context):
