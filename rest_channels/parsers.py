@@ -1,8 +1,8 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+import six
 import ujson
-from rest_framework.compat import six
 from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 
